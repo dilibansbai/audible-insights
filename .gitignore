@@ -1,0 +1,16 @@
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Ignore raw datasets
+Audible_Catlog.csv
+Audible_Catlog_Advanced_Features.csv
+
+# Keep cleaned dataset for app
+# cleaned_books_data.csv
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
