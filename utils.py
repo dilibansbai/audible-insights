@@ -34,15 +34,23 @@ def recommend_cluster(df,title, k=5):
     return recs[['title','author','rating']].head(k).reset_index(drop=True)
 
 def recommend_hybrid(df, cosine_sim, title, k=5):
-    
-    rec1 = recommend_content(df, cosine_sim, title, k)
-    rec2 = recommend_cluster(df, title, k)
 
-    combined = pd.concat([rec1, rec2])
-    
-    combined = combined.drop_duplicates(subset='title')
-    
-    return combined.head(k)
+    content = recommend_content(df, cosine_sim, title, k)
+    cluster = recommend_cluster(df, title, k)
+
+    hybrid = content.head(3).copy()
+
+    for _, row in cluster.iterrows():
+        if row["title"] not in hybrid["title"].values:
+            hybrid = pd.concat(
+                [hybrid, row.to_frame().T],
+                ignore_index=True
+            )
+
+        if len(hybrid) >= k:
+            break
+
+    return hybrid.reset_index(drop=True)
 
 def precision_at_k(recommended, relevant, k=5):
     recommended = list(recommended)[:k]
