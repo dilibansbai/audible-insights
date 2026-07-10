@@ -1,23 +1,23 @@
 import pandas as pd
 
-def recommend_content(df, cosine_sim, title, k=5):
+def recommend_content(df,cosine_sim,title, k=5):
     title = title.lower()
-    
     matches = df[df['title'].str.contains(title)]
+
     if matches.empty:
         return pd.DataFrame()
-    
+
     idx = matches.index[0]
 
-    sim_scores = cosine_sim[idx].flatten()
-    
-    scores = list(enumerate(sim_scores))
-    
-    scores = sorted(scores, key=lambda x: float(x[1]), reverse=True)[1:k+1]
-    
-    indices = [i[0] for i in scores]
-    
-    return df[['title', 'author', 'rating']].iloc[indices]
+    scores = list(enumerate(cosine_sim[idx]))
+    scores = sorted(scores, key=lambda x: x[1], reverse=True)[1:k+1]
+
+    idxs = [i for i, _ in scores]
+
+    recommendations = df.iloc[idxs][["title", "author", "rating"]]
+    recommendations = recommendations.reset_index(drop=True)
+
+    return recommendations
 
 def recommend_cluster(df,title, k=5):
     title = title.lower()
